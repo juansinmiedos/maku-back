@@ -1,14 +1,15 @@
 const express = require("express")
 const router = express.Router()
 
-const { getProjects } = require("../controllers/projects")
+const {
+  getProjects,
+  getProjectByName,
+} = require("../controllers/projects")
 
 // PUBLIC ROUTES
 // POST login
-// GET projects
 router.get("/projects", getProjects)
-
-// GET projects/:id
+router.get("/projects/:name", getProjectByName)
 // POST form
 
 // ADMIN ROUTES
