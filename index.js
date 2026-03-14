@@ -21,7 +21,7 @@ app.use(cors({
   credentials: true,
   origin: [
     "http://localhost:5173",
-    "https://maku2.vercel.app/"
+    "https://maku2.vercel.app"
   ],
 }))
 // credentials: true,
