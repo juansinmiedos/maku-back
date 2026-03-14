@@ -13,7 +13,17 @@ mongoose.connect(process.env.DB, { dbName: "maku" })
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+  // "origin": "*",
+  // "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+  // "preflightContinue": false,
+  // "optionsSuccessStatus": 204,
+  credentials: true,
+  origin: [
+    "http://localhost:5173",
+    "https://maku2.vercel.app/"
+  ],
+}))
 // credentials: true,
 //   origin: "http://localhost:5173"
 app.use(session({
