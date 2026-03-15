@@ -31,6 +31,7 @@ app.use(session({
   })
 }))
 
+app.use(express.json())
 app.use("/api", router)
 
 app.listen(process.env.PORT, () => {

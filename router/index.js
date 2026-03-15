@@ -6,12 +6,13 @@ const {
   getProjectByName,
   deleteProjectById,
 } = require("../controllers/projects")
+const { sendForm } = require("../controllers/form")
 
 // PUBLIC ROUTES
 // POST login
 router.get("/projects", getProjects)
 router.get("/projects/:name", getProjectByName)
-// POST form
+router.post("/send-form", sendForm)
 
 // ADMIN ROUTES
 // POST projects
