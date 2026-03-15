@@ -20,5 +20,15 @@ const getProjectByName = async(req, res) => {
   }
 }
 
+const deleteProjectById = async (req, res) => {
+  try {
+    const project = await Project.findByIdAndDelete(req.params.id)
+    res.status(200).json(project)
+  } catch(error) {
+    res.status(500).json({error})
+  }
+}
+
 exports.getProjects = getProjects
 exports.getProjectByName = getProjectByName
+exports.deleteProjectById = deleteProjectById

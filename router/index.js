@@ -4,6 +4,7 @@ const router = express.Router()
 const {
   getProjects,
   getProjectByName,
+  deleteProjectById,
 } = require("../controllers/projects")
 
 // PUBLIC ROUTES
@@ -15,6 +16,6 @@ router.get("/projects/:name", getProjectByName)
 // ADMIN ROUTES
 // POST projects
 // PUT projects/:id
-// DELETE projects/:id
+router.delete("/projects/:id", deleteProjectById)
 
 module.exports = router
