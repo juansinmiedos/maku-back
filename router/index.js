@@ -4,6 +4,8 @@ const router = express.Router()
 const {
   getProjects,
   getProjectByName,
+  createProject,
+  updateProject,
   deleteProjectById,
 } = require("../controllers/projects")
 const { sendForm } = require("../controllers/form")
@@ -15,8 +17,8 @@ router.get("/projects/:name", getProjectByName)
 router.post("/send-form", sendForm)
 
 // ADMIN ROUTES
-// POST projects
-// PUT projects/:id
+router.post("/projects", createProject)
+router.put("/projects/:id", updateProject)
 router.delete("/projects/:id", deleteProjectById)
 
 module.exports = router

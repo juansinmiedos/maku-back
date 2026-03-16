@@ -20,6 +20,10 @@ const getProjectByName = async(req, res) => {
   }
 }
 
+const createProject = async (req, res) => {}
+
+const updateProject = async (req, res) => {}
+
 const deleteProjectById = async (req, res) => {
   try {
     const project = await Project.findByIdAndDelete(req.params.id)
@@ -31,4 +35,6 @@ const deleteProjectById = async (req, res) => {
 
 exports.getProjects = getProjects
 exports.getProjectByName = getProjectByName
+exports.createProject = createProject
+exports.updateProject = updateProject
 exports.deleteProjectById = deleteProjectById
