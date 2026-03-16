@@ -2,6 +2,8 @@ import { google } from "googleapis"
 import fs from "fs"
 
 const credentials = JSON.parse(fs.readFileSync("google-sheets-key.json", "utf8"))
+credentials.private_key_id = process.env.GOOGLE_PRIVATE_KEY_ID
+credentials.private_key = process.env.GOOGLE_PRIVATE_KEY
 
 const auth = new google.auth.GoogleAuth({
   credentials,
