@@ -10,10 +10,6 @@ const auth = new google.auth.GoogleAuth({
 
 const sendForm = async(req, res) => {
   try {
-    // recibo el body
-    console.log(req.body)
-
-    // almaceno en un sheet de google
     const sheets = google.sheets({ version: "v4", auth })
     const values = [
       req.body.firstName,
