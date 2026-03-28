@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose")
+const { Schema, model, ObjectId } = require("mongoose")
 
 const ProjectSchema = new Schema(
   {
@@ -24,6 +24,10 @@ const ProjectSchema = new Schema(
       rquired: true,
     },
     images: Array,
+    relatedProjects: [{
+      type: ObjectId,
+      ref: "Project"
+    }],
   },
   {
     timestamps: true,

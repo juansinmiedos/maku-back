@@ -11,16 +11,32 @@ const getProjects = async(req, res) => {
 
 const getProjectByName = async(req, res) => {
   try {
-    const project = await Project.find({
+    const project = await Project.findOne({
       name: req.params.name
-    })
+    }).populate("relatedProjects")
     res.status(200).json(project)
   } catch(error) {
     res.status(500).json({error})
   }
 }
 
-const createProject = async (req, res) => {}
+const createProject = async (req, res) => {
+  const body = { ...req.body }
+  body.name = body.title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9 ]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+
+  // store images
+  body.imageUrl = "sample.com"
+
+  // save to mongo db
+  const createdProduct = await Project.create(body)
+  res.status(201).json(createdProduct)
+}
 
 const updateProject = async (req, res) => {}
 

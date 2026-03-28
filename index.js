@@ -31,7 +31,7 @@ app.use(session({
   })
 }))
 
-app.use(express.json())
+app.use(express.json({ limit: '10mb' }))
 app.use("/api", router)
 
 app.listen(process.env.PORT, () => {
