@@ -36,23 +36,39 @@ const createProject = async (req, res) => {
     body.relatedProjects = body.relatedProjects.split(",")
   }
 
-  // store images
   const result = await cloudinary.uploader.upload(req.file.path, {
     folder: 'mi_app/singles'
   })
   body.imageUrl = result.url
   fs.unlinkSync(req.file.path)
 
-  // save to mongo db
+  // Store regular images
+
   const createdProduct = await Project.create(body)
   res.status(201).json(createdProduct)
 }
 
 const updateProject = async (req, res) => {}
 
+const getPublicIdFromUrl = (url) => {
+  const parts = url.split('/')
+  const lastPart = parts.pop()
+  const publicId = lastPart.split('.')[0]
+  const folderIndex = parts.indexOf('upload') + 2
+  const folderPath = parts.slice(folderIndex).join('/')
+  return folderPath ? `${folderPath}/${publicId}` : publicId
+}
+
 const deleteProjectById = async (req, res) => {
   try {
-    const project = await Project.findByIdAndDelete(req.params.id)
+    let project = await Project.findById(req.params.id)
+
+    if (project.imageUrl) {
+      const publicId = getPublicIdFromUrl(project.imageUrl)
+      await cloudinary.uploader.destroy(publicId)
+    }
+
+    project = await Project.findByIdAndDelete(req.params.id)
     res.status(200).json(project)
   } catch(error) {
     res.status(500).json({error})
