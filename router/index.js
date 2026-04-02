@@ -25,7 +25,14 @@ router.get("/projects/:name", getProjectByName)
 router.post("/send-form", sendForm)
 
 // ADMIN ROUTES
-router.post("/projects", upload.single('mainImage'), createProject)
+router.post(
+  "/projects",
+  upload.fields([
+    { name: 'mainImage', maxCount: 1 },
+    { name: 'images', maxCount: 3 } 
+  ]),
+  createProject
+)
 router.put("/projects/:id", updateProject)
 router.delete("/projects/:id", deleteProjectById)
 

@@ -36,13 +36,20 @@ const createProject = async (req, res) => {
     body.relatedProjects = body.relatedProjects.split(",")
   }
 
-  const result = await cloudinary.uploader.upload(req.file.path, {
+  const mainImageFile = req.files['mainImage'][0]
+  const result = await cloudinary.uploader.upload(mainImageFile.path, {
     folder: 'mi_app/singles'
   })
+  fs.unlinkSync(mainImageFile.path)
   body.imageUrl = result.url
-  fs.unlinkSync(req.file.path)
 
-  // Store regular images
+  const extraImagesFiles = req.files['images']
+  const extraPromises = extraImagesFiles.map(file => 
+    cloudinary.uploader.upload(file.path, { folder: 'mi_app/gallery' })
+  )
+  const extraResults = await Promise.all(extraPromises)
+  extraImagesFiles.forEach(file => fs.unlinkSync(file.path))
+  body.images = extraResults.map(r => r.url)
 
   const createdProduct = await Project.create(body)
   res.status(201).json(createdProduct)
