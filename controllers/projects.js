@@ -75,6 +75,14 @@ const deleteProjectById = async (req, res) => {
       await cloudinary.uploader.destroy(publicId)
     }
 
+    if (project.images.length > 0) {
+      const promises = project.images.map(imageUrl => {
+        const publicId = getPublicIdFromUrl(imageUrl)
+        return cloudinary.uploader.destroy(publicId)
+      })
+      await Promise.all(promises)
+    }
+
     project = await Project.findByIdAndDelete(req.params.id)
     res.status(200).json(project)
   } catch(error) {
