@@ -1,4 +1,6 @@
 const Project = require("../models/Project")
+const cloudinary = require("../config/cloudinary")
+const fs = require('fs')
 
 const getProjects = async(req, res) => {
   try {
@@ -30,8 +32,16 @@ const createProject = async (req, res) => {
     .trim()
     .replace(/\s+/g, "-")
 
+  if (body.relatedProjects) {
+    body.relatedProjects = body.relatedProjects.split(",")
+  }
+
   // store images
-  body.imageUrl = "sample.com"
+  const result = await cloudinary.uploader.upload(req.file.path, {
+    folder: 'mi_app/singles'
+  })
+  body.imageUrl = result.url
+  fs.unlinkSync(req.file.path)
 
   // save to mongo db
   const createdProduct = await Project.create(body)
