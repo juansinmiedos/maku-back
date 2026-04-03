@@ -17,11 +17,11 @@ app.use(cors({
   credentials: true,
   origin: [
     "http://localhost:5173",
-    "https://maku2.vercel.app/home"
+    "https://maku2.vercel.app"
   ],
 }))
 app.use(session({
-  secret: 'SECRET',
+  secret: process.env.EXPRESS_SECRET,
   cookie: { maxAge: 1000 * 60 * 60 * 24 },
   resave: false,
   saveUninitialized: false,
