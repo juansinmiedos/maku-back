@@ -36,20 +36,29 @@ const createProject = async (req, res) => {
     body.relatedProjects = body.relatedProjects.split(",")
   }
 
+  const uploadToCloudinary = (fileBuffer, folder) => {
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: folder },
+        (error, result) => {
+          if (error) return reject(error)
+          resolve(result)
+        }
+      )
+      uploadStream.end(fileBuffer)
+    })
+  }
+
   const mainImageFile = req.files['mainImage'][0]
-  const result = await cloudinary.uploader.upload(mainImageFile.path, {
-    folder: 'mi_app/singles'
-  })
-  fs.unlinkSync(mainImageFile.path)
-  body.imageUrl = result.url
+  const result = await uploadToCloudinary(mainImageFile.buffer, 'mi_app/singles')
+  body.imageUrl = result.secure_url
 
   const extraImagesFiles = req.files['images']
   const extraPromises = extraImagesFiles.map(file => 
-    cloudinary.uploader.upload(file.path, { folder: 'mi_app/gallery' })
+    uploadToCloudinary(file.buffer, 'mi_app/gallery')
   )
   const extraResults = await Promise.all(extraPromises)
-  extraImagesFiles.forEach(file => fs.unlinkSync(file.path))
-  body.images = extraResults.map(r => r.url)
+  body.images = extraResults.map(r => r.secure_url)
 
   const createdProduct = await Project.create(body)
   res.status(201).json(createdProduct)
