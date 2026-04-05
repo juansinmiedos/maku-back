@@ -21,7 +21,7 @@ const ProjectSchema = new Schema(
     },
     year: {
       type: String,
-      rquired: true,
+      required: true,
     },
     images: Array,
     relatedProjects: [{
