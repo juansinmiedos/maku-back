@@ -61,7 +61,26 @@ const createProject = async (req, res) => {
     uploadToCloudinary(file.buffer, 'mi_app/gallery')
   )
   const extraResults = await Promise.all(extraPromises)
-  body.images = extraResults.map(r => r.secure_url)
+  body.images = extraResults.map(r => {
+    if (r.resource_type === "video") {
+      const thumbnail = cloudinary.url(r.public_id, {
+        resource_type: "video",
+        format: "jpg",
+        transformation: [{ start_offset: "2" }]
+      })
+  
+      return {
+        type: "video",
+        url: r.secure_url,
+        thumbnail
+      }
+    }
+  
+    return {
+      type: "image",
+      url: r.secure_url
+    }
+  })
 
   const createdProduct = await Project.create(body)
   res.status(201).json(createdProduct)
@@ -88,8 +107,8 @@ const deleteProjectById = async (req, res) => {
     }
 
     if (project.images.length > 0) {
-      const promises = project.images.map(imageUrl => {
-        const publicId = getPublicIdFromUrl(imageUrl)
+      const promises = project.images.map(file => {
+        const publicId = getPublicIdFromUrl(file.url)
         return cloudinary.uploader.destroy(publicId)
       })
       await Promise.all(promises)
