@@ -198,7 +198,9 @@ const sendForm = async(req, res) => {
 
     res.sendStatus(200)
   } catch(error) {
-    res.status(500).json({error})
+    console.log("Error at sendForm:")
+    console.log(error)
+    res.status(500).json({ error: error.message })
   }
 }
 

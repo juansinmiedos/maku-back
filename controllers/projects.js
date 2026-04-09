@@ -7,7 +7,9 @@ const getProjects = async(req, res) => {
     const projects = await Project.find()
     res.status(200).json(projects)
   } catch(error) {
-    res.status(500).json({error})
+    console.log("Error at getProjects:")
+    console.log(error)
+    res.status(500).json({ error: error.message })
   }
 }
 
@@ -18,7 +20,9 @@ const getProjectByName = async(req, res) => {
     }).populate("relatedProjects")
     res.status(200).json(project)
   } catch(error) {
-    res.status(500).json({error})
+    console.log("Error at getProjectByName:")
+    console.log(error)
+    res.status(500).json({ error: error.message })
   }
 }
 
@@ -39,51 +43,57 @@ const uploadToCloudinary = (fileBuffer, folder) => {
 }
 
 const createProject = async (req, res) => {
-  const body = { ...req.body }
-  body.name = body.title
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9 ]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-
-  if (body.relatedProjects) {
-    body.relatedProjects = body.relatedProjects.split(",")
-  }
-
-  const mainImageFile = req.files['mainImage'][0]
-  const result = await uploadToCloudinary(mainImageFile.buffer, 'mi_app/singles')
-  body.imageUrl = result.secure_url
-
-  const extraImagesFiles = req.files['images']
-  const extraPromises = extraImagesFiles.map(file => 
-    uploadToCloudinary(file.buffer, 'mi_app/gallery')
-  )
-  const extraResults = await Promise.all(extraPromises)
-  body.images = extraResults.map(r => {
-    if (r.resource_type === "video") {
-      const thumbnail = cloudinary.url(r.public_id, {
-        resource_type: "video",
-        format: "jpg",
-        transformation: [{ start_offset: "2" }]
-      })
+  try {
+    const body = { ...req.body }
+    body.name = body.title
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9 ]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")
   
-      return {
-        type: "video",
-        url: r.secure_url,
-        thumbnail
+    if (body.relatedProjects) {
+      body.relatedProjects = body.relatedProjects.split(",")
+    }
+  
+    const mainImageFile = req.files['mainImage'][0]
+    const result = await uploadToCloudinary(mainImageFile.buffer, 'mi_app/singles')
+    body.imageUrl = result.secure_url
+  
+    const extraImagesFiles = req.files['images']
+    const extraPromises = extraImagesFiles.map(file => 
+      uploadToCloudinary(file.buffer, 'mi_app/gallery')
+    )
+    const extraResults = await Promise.all(extraPromises)
+    body.images = extraResults.map(r => {
+      if (r.resource_type === "video") {
+        const thumbnail = cloudinary.url(r.public_id, {
+          resource_type: "video",
+          format: "jpg",
+          transformation: [{ start_offset: "2" }]
+        })
+    
+        return {
+          type: "video",
+          url: r.secure_url,
+          thumbnail
+        }
       }
-    }
+    
+      return {
+        type: "image",
+        url: r.secure_url
+      }
+    })
   
-    return {
-      type: "image",
-      url: r.secure_url
-    }
-  })
-
-  const createdProduct = await Project.create(body)
-  res.status(201).json(createdProduct)
+    const createdProduct = await Project.create(body)
+    res.status(201).json(createdProduct)
+  } catch(error) {
+    console.log("Error at createProject:")
+    console.log(error)
+    res.status(500).json({ error: error.message })
+  }
 }
 
 const toArray = (value) => {
@@ -164,6 +174,8 @@ const updateProject = async (req, res) => {
     await project.save()
     res.status(200).json(project)
   } catch(error) {
+    console.log("Error at updateProject:")
+    console.log(error)
     res.status(500).json({ error: error.message })
   }
 }
@@ -197,7 +209,9 @@ const deleteProjectById = async (req, res) => {
     project = await Project.findByIdAndDelete(req.params.id)
     res.status(200).json(project)
   } catch(error) {
-    res.status(500).json({error})
+    console.log("Error at deleteProjectById:")
+    console.log(error)
+    res.status(500).json({ error: error.message })
   }
 }
 
