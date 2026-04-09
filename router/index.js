@@ -8,6 +8,8 @@ const upload = multer(storage)
 
 const {
   signUp,
+  logIn,
+  // logOut,
 } = require("../controllers/auth.js")
 const {
   getProjects,
@@ -21,7 +23,7 @@ const { sendForm } = require("../controllers/form")
 // PUBLIC ROUTES
 // POST login
 router.post("/signup", signUp)
-// router.post("/login", passport.authenticate('local'), logIn)
+router.post("/login", passport.authenticate('local'), logIn)
 router.get("/projects", getProjects)
 router.get("/projects/:name", getProjectByName)
 router.post("/send-form", sendForm)
@@ -44,5 +46,6 @@ router.put(
   updateProject
 )
 router.delete("/projects/:id", deleteProjectById)
+// router.post("/logout", userAuth, logOut)
 
 module.exports = router
