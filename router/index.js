@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const multer = require('multer')
 const passport = require("../config/passport.js")
-const { auth } = require("../middlewares/auth.js")
+const { isAuthenticated } = require("../middlewares/auth.js")
 
 const storage = multer.memoryStorage()
 const upload = multer(storage)
@@ -31,7 +31,7 @@ router.post("/send-form", sendForm)
 // ADMIN ROUTES
 router.post(
   "/projects",
-  auth,
+  isAuthenticated,
   upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'images' } 
@@ -40,14 +40,14 @@ router.post(
 )
 router.put(
   "/projects/:id",
-  auth,
+  isAuthenticated,
   upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'images' } 
   ]),
   updateProject
 )
-router.delete("/projects/:id", auth, deleteProjectById)
-router.post("/logout", auth, logOut)
+router.delete("/projects/:id", isAuthenticated, deleteProjectById)
+router.post("/logout", isAuthenticated, logOut)
 
 module.exports = router
