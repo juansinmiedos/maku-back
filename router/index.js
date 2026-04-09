@@ -10,6 +10,7 @@ const upload = multer(storage)
 const {
   signUp,
   logIn,
+  pingUser,
   logOut,
 } = require("../controllers/auth.js")
 const {
@@ -29,6 +30,8 @@ router.get("/projects/:name", getProjectByName)
 router.post("/send-form", sendForm)
 
 // ADMIN ROUTES
+router.get("/me", pingUser)
+router.post("/logout", isAuthenticated, logOut)
 router.post(
   "/projects",
   isAuthenticated,
@@ -48,6 +51,5 @@ router.put(
   updateProject
 )
 router.delete("/projects/:id", isAuthenticated, deleteProjectById)
-router.post("/logout", isAuthenticated, logOut)
 
 module.exports = router

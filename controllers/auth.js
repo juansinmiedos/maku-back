@@ -39,6 +39,16 @@ const logIn = async (req, res, next) => {
   })(req, res, next)
 }
 
+const pingUser = async (req, res) => {
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    return res.status(401).json({ user: null })
+  }
+
+  res.json({
+    user: req.user,
+  })
+}
+
 const logOut = async (req, res) => {
   req.logout(error => {
     if (error) {
@@ -46,10 +56,14 @@ const logOut = async (req, res) => {
       console.log(error)
       res.status(500).json({ error: error.message })
     }
-    res.status(200).json({ msg: 'Logged out' })
+    req.session.destroy(() => {
+      res.clearCookie("connect.sid")
+      res.status(200).json({ message: "Logged out" })
+    })
   })
 }
 
 exports.signUp = signUp
 exports.logIn = logIn
+exports.pingUser = pingUser
 exports.logOut = logOut
