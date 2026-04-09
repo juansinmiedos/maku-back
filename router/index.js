@@ -29,7 +29,14 @@ router.post(
   ]),
   createProject
 )
-router.put("/projects/:id", updateProject)
+router.put(
+  "/projects/:id",
+  upload.fields([
+    { name: 'mainImage', maxCount: 1 },
+    { name: 'images', maxCount: 3 } 
+  ]),
+  updateProject
+)
 router.delete("/projects/:id", deleteProjectById)
 
 module.exports = router
