@@ -6,13 +6,14 @@ const cors = require("cors")
 const session = require("express-session")
 const MongoStore = require('connect-mongo')
 const router = require("./router/index")
+const passport = require("./config/passport")
 
 mongoose.connect(process.env.DB, { dbName: "maku" })
   .then(x => console.log(`Connected to Mongo! Database name: ${x.connection.name}`))
   .catch(error => console.log(`Error connecting to mongo`, error))
 
 const app = express()
-
+app.use(express.json({ limit: '10mb' }))
 app.use(cors({
   credentials: true,
   origin: [
@@ -30,8 +31,8 @@ app.use(session({
     ttl: 24 * 60 * 60 * 1000
   })
 }))
-
-app.use(express.json({ limit: '10mb' }))
+app.use(passport.initialize())
+app.use(passport.session())
 app.use("/api", router)
 
 app.listen(process.env.PORT, () => {
