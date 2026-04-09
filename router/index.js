@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const multer = require('multer')
 const passport = require("../config/passport.js")
+const { auth } = require("../middlewares/auth.js")
 
 const storage = multer.memoryStorage()
 const upload = multer(storage)
@@ -9,7 +10,7 @@ const upload = multer(storage)
 const {
   signUp,
   logIn,
-  // logOut,
+  logOut,
 } = require("../controllers/auth.js")
 const {
   getProjects,
@@ -21,7 +22,6 @@ const {
 const { sendForm } = require("../controllers/form")
 
 // PUBLIC ROUTES
-// POST login
 router.post("/signup", signUp)
 router.post("/login", passport.authenticate('local'), logIn)
 router.get("/projects", getProjects)
@@ -31,6 +31,7 @@ router.post("/send-form", sendForm)
 // ADMIN ROUTES
 router.post(
   "/projects",
+  auth,
   upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'images' } 
@@ -39,13 +40,14 @@ router.post(
 )
 router.put(
   "/projects/:id",
+  auth,
   upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'images' } 
   ]),
   updateProject
 )
-router.delete("/projects/:id", deleteProjectById)
-// router.post("/logout", userAuth, logOut)
+router.delete("/projects/:id", auth, deleteProjectById)
+router.post("/logout", auth, logOut)
 
 module.exports = router

@@ -17,10 +17,18 @@ const signUp = async (req, res) => {
 
 const logIn = async (req, res, next) => {
   passport.authenticate("local", (error, user) => {
-    if (error || !user) res.status(401).json({ error })
+    if (error || !user) {
+      console.log("Error at logIn: authenticate")
+      console.log(error)
+      res.status(401).json({ error: error.message })
+    }
 
     req.logIn(user, error => {
-      if (error) res.status(401).json({ error })
+      if (error) {
+        console.log("Error at logIn: logIn")
+        console.log(error)
+        res.status(401).json({ error: error.message })
+      }
       res.status(200).json({
         name: user.name,
         lastname: user.lastname,
@@ -33,7 +41,11 @@ const logIn = async (req, res, next) => {
 
 const logOut = async (req, res) => {
   req.logout(error => {
-    if (error) res.status(500).json({ error })
+    if (error) {
+      console.log("Error at logOut:")
+      console.log(error)
+      res.status(500).json({ error: error.message })
+    }
     res.status(200).json({ msg: 'Logged out' })
   })
 }
