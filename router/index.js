@@ -25,7 +25,7 @@ router.post(
   "/projects",
   upload.fields([
     { name: 'mainImage', maxCount: 1 },
-    { name: 'images', maxCount: 3 } 
+    { name: 'images' } 
   ]),
   createProject
 )
@@ -33,7 +33,7 @@ router.put(
   "/projects/:id",
   upload.fields([
     { name: 'mainImage', maxCount: 1 },
-    { name: 'images', maxCount: 3 } 
+    { name: 'images' } 
   ]),
   updateProject
 )
