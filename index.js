@@ -19,7 +19,8 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "https://maku2.vercel.app",
-    "https://maku-front.vercel.app"
+    "https://maku-front.vercel.app",
+    "https://maku.agency",
   ],
 }))
 app.use(session({
