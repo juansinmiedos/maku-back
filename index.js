@@ -23,13 +23,14 @@ app.use(cors({
     "https://maku.agency",
   ],
 }))
+app.set("trust proxy", 1)
 app.use(session({
   secret: process.env.EXPRESS_SECRET,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   },
   resave: false,
   saveUninitialized: false,
