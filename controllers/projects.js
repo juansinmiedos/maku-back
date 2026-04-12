@@ -86,6 +86,10 @@ const createProject = async (req, res) => {
         url: r.secure_url
       }
     })
+
+    if (body.relatedProjects === "") {
+      delete body.relatedProjects
+    }
   
     const createdProduct = await Project.create(body)
     res.status(201).json(createdProduct)
