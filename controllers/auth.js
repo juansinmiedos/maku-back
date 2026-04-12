@@ -5,8 +5,7 @@ const User = require("../models/User")
 const signUp = async (req, res) => {
   try {
     const { username, password } = req.body
-    const newUser = await User.register(new User({ username }), password);
-    console.log({newUser})
+    await User.register(new User({ username }), password);
     res.status(201).json({ data: "User created" })
   } catch(error) {
     console.log("Error at signUp:")
