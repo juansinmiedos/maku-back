@@ -13,7 +13,7 @@ mongoose.connect(process.env.DB, { dbName: "maku" })
   .catch(error => console.log(`Error connecting to mongo`, error))
 
 const app = express()
-app.use(express.json({ limit: '10mb' }))
+app.use(express.json({ limit: '100mb' }))
 app.use(cors({
   credentials: true,
   origin: [
