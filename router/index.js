@@ -16,6 +16,7 @@ const {
 const {
   getProjects,
   getProjectByName,
+  generateSignature,
   createProject,
   updateProject,
   deleteProjectById,
@@ -32,6 +33,7 @@ router.post("/send-form", sendForm)
 // ADMIN ROUTES
 router.get("/me", pingUser)
 router.post("/logout", isAuthenticated, logOut)
+router.get("/clodinary-signature", isAuthenticated, generateSignature)
 router.post(
   "/projects",
   isAuthenticated,
@@ -50,6 +52,6 @@ router.put(
   ]),
   updateProject
 )
-router.delete("/projects/:id", isAuthenticated, deleteProjectById)
+router.delete("/projects/:id", deleteProjectById)
 
 module.exports = router

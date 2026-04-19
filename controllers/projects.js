@@ -42,6 +42,27 @@ const uploadToCloudinary = (fileBuffer, folder) => {
   })
 }
 
+const generateSignature = async (req, res) => {
+  try {
+    const timestamp = Math.round(new Date().getTime() / 1000)
+
+    const signature = cloudinary.utils.api_sign_request(
+      { timestamp },
+      process.env.CLOUDINARY_API_SECRET
+    )
+
+    res.status(200).json({
+      timestamp,
+      signature,
+      apiKey: process.env.CLOUDINARY_API_KEY
+    })
+  } catch(error) {
+    console.log("Error at generateSignature:")
+    console.log(error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
 const createProject = async (req, res) => {
   try {
     const body = { ...req.body }
@@ -57,35 +78,38 @@ const createProject = async (req, res) => {
       body.relatedProjects = body.relatedProjects.split(",")
     }
   
-    const mainImageFile = req.files['mainImage'][0]
-    const result = await uploadToCloudinary(mainImageFile.buffer, 'mi_app/singles')
-    body.imageUrl = result.secure_url
+    // const mainImageFile = req.files['mainImage'][0]
+    // const result = await uploadToCloudinary(mainImageFile.buffer, 'mi_app/singles')
+    // body.imageUrl = result.secure_url
   
-    const extraImagesFiles = req.files['images']
-    const extraPromises = extraImagesFiles.map(file => 
-      uploadToCloudinary(file.buffer, 'mi_app/gallery')
-    )
-    const extraResults = await Promise.all(extraPromises)
-    body.images = extraResults.map(r => {
-      if (r.resource_type === "video") {
-        const thumbnail = cloudinary.url(r.public_id, {
-          resource_type: "video",
-          format: "jpg",
-          transformation: [{ start_offset: "2" }]
-        })
+    // const extraImagesFiles = req.files['images']
+    // const extraPromises = extraImagesFiles.map(file => 
+    //   uploadToCloudinary(file.buffer, 'mi_app/gallery')
+    // )
+    // const extraResults = await Promise.all(extraPromises)
+    // body.images = extraResults.map(r => {
+    //   if (r.resource_type === "video") {
+    //     const thumbnail = cloudinary.url(r.public_id, {
+    //       resource_type: "video",
+    //       format: "jpg",
+    //       transformation: [{ start_offset: "2" }]
+    //     })
     
-        return {
-          type: "video",
-          url: r.secure_url,
-          thumbnail
-        }
-      }
+    //     return {
+    //       type: "video",
+    //       url: r.secure_url,
+    //       thumbnail
+    //     }
+    //   }
     
-      return {
-        type: "image",
-        url: r.secure_url
-      }
-    })
+    //   return {
+    //     type: "image",
+    //     url: r.secure_url
+    //   }
+    // })
+    if (body.images) {
+      body.images = JSON.parse(body.images)
+    }
 
     if (body.relatedProjects === "") {
       delete body.relatedProjects
@@ -140,7 +164,6 @@ const updateProject = async (req, res) => {
 
     // Si hay nuevas imágenes secundarias, cargarlas
     const extraImagesFiles = req.files?.['images']
-    console.log(req.files)
     if (extraImagesFiles && extraImagesFiles.length > 0) {
       const extraPromises = extraImagesFiles.map(file => 
         uploadToCloudinary(file.buffer, 'mi_app/gallery')
@@ -221,6 +244,7 @@ const deleteProjectById = async (req, res) => {
 
 exports.getProjects = getProjects
 exports.getProjectByName = getProjectByName
+exports.generateSignature = generateSignature
 exports.createProject = createProject
 exports.updateProject = updateProject
 exports.deleteProjectById = deleteProjectById
