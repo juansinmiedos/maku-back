@@ -156,40 +156,47 @@ const updateProject = async (req, res) => {
     }
 
     // Si hay nueva imagen principal, cargarla
-    const mainImageFile = req.files?.['mainImage']?.[0]
-    if (mainImageFile) {
-      const result = await uploadToCloudinary(mainImageFile.buffer, 'mi_app/singles')
-      project.imageUrl = result.secure_url
-    }
+    // const mainImageFile = req.files?.['mainImage']?.[0]
+    // if (mainImageFile) {
+    //   const result = await uploadToCloudinary(mainImageFile.buffer, 'mi_app/singles')
+    //   project.imageUrl = result.secure_url
+    // }
 
     // Si hay nuevas imágenes secundarias, cargarlas
-    const extraImagesFiles = req.files?.['images']
-    if (extraImagesFiles && extraImagesFiles.length > 0) {
-      const extraPromises = extraImagesFiles.map(file => 
-        uploadToCloudinary(file.buffer, 'mi_app/gallery')
-      )
-      const extraResults = await Promise.all(extraPromises)
-      const newImages = extraResults.map(r => {
-        if (r.resource_type === "video") {
-          const thumbnail = cloudinary.url(r.public_id, {
-            resource_type: "video",
-            format: "jpg",
-            transformation: [{ start_offset: "2" }]
-          })
+    // const extraImagesFiles = req.files?.['images']
+    // if (extraImagesFiles && extraImagesFiles.length > 0) {
+    //   const extraPromises = extraImagesFiles.map(file => 
+    //     uploadToCloudinary(file.buffer, 'mi_app/gallery')
+    //   )
+    //   const extraResults = await Promise.all(extraPromises)
+    //   const newImages = extraResults.map(r => {
+    //     if (r.resource_type === "video") {
+    //       const thumbnail = cloudinary.url(r.public_id, {
+    //         resource_type: "video",
+    //         format: "jpg",
+    //         transformation: [{ start_offset: "2" }]
+    //       })
       
-          return {
-            type: "video",
-            url: r.secure_url,
-            thumbnail
-          }
-        }
+    //       return {
+    //         type: "video",
+    //         url: r.secure_url,
+    //         thumbnail
+    //       }
+    //     }
       
-        return {
-          type: "image",
-          url: r.secure_url
-        }
-      })
-      project.images = [ ...project.images, ...newImages]
+    //     return {
+    //       type: "image",
+    //       url: r.secure_url
+    //     }
+    //   })
+    //   project.images = [ ...project.images, ...newImages]
+    // }
+
+    if (body.imageUrl) {
+      project.imageUrl = body.imageUrl
+    }
+    if (body.images && body.images.length > 0) {
+      project.images = JSON.parse(body.images)
     }
 
     // Hacer actualización de campos (url y campos de pre rellenados)
