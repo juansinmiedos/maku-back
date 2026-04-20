@@ -196,7 +196,8 @@ const updateProject = async (req, res) => {
       project.imageUrl = body.imageUrl
     }
     if (body.images && body.images.length > 0) {
-      project.images = JSON.parse(body.images)
+      const newImages = JSON.parse(body.images)
+      project.images = [ ...project.images, ...newImages ]
     }
 
     // Hacer actualización de campos (url y campos de pre rellenados)
