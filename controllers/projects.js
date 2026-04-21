@@ -5,7 +5,7 @@ const fs = require('fs')
 const getProjects = async(req, res) => {
   try {
     const projects = await Project.find()
-    res.status(200).json(projects)
+    res.status(200).json(projects.reverse())
   } catch(error) {
     console.log("Error at getProjects:")
     console.log(error)
@@ -26,21 +26,21 @@ const getProjectByName = async(req, res) => {
   }
 }
 
-const uploadToCloudinary = (fileBuffer, folder) => {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: folder,
-        resource_type: "auto"
-      },
-      (error, result) => {
-        if (error) return reject(error)
-        resolve(result)
-      }
-    )
-    uploadStream.end(fileBuffer)
-  })
-}
+// const uploadToCloudinary = (fileBuffer, folder) => {
+//   return new Promise((resolve, reject) => {
+//     const uploadStream = cloudinary.uploader.upload_stream(
+//       {
+//         folder: folder,
+//         resource_type: "auto"
+//       },
+//       (error, result) => {
+//         if (error) return reject(error)
+//         resolve(result)
+//       }
+//     )
+//     uploadStream.end(fileBuffer)
+//   })
+// }
 
 const generateSignature = async (req, res) => {
   try {
