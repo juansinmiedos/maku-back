@@ -12,17 +12,32 @@ const transporter = nodemailer.createTransport({
   },
 })
 
+// CRENCIALES PARA TESTING:
+// const credentials = {
+//   type: "service_account",
+//   project_id: "maku-formulario",
+//   private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
+//   private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+//   client_email: "website@maku-formulario.iam.gserviceaccount.com",
+//   client_id: "101018582271401793637",
+//   auth_uri: "https://accounts.google.com/o/oauth2/auth",
+//   token_uri: "https://oauth2.googleapis.com/token",
+//   auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+//   client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/website%40maku-formulario.iam.gserviceaccount.com",
+//   universe_domain: "googleapis.com"
+// }
+
 const credentials = {
   type: "service_account",
-  project_id: "maku-formulario",
+  project_id: "maku-mailer-494001",
   private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
   private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-  client_email: "website@maku-formulario.iam.gserviceaccount.com",
-  client_id: "101018582271401793637",
+  client_email: "webform@maku-mailer-494001.iam.gserviceaccount.com",
+  client_id: "101081749864165049115",
   auth_uri: "https://accounts.google.com/o/oauth2/auth",
   token_uri: "https://oauth2.googleapis.com/token",
   auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/website%40maku-formulario.iam.gserviceaccount.com",
+  client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/webform%40maku-mailer-494001.iam.gserviceaccount.com",
   universe_domain: "googleapis.com"
 }
 
@@ -172,6 +187,7 @@ const sendForm = async(req, res) => {
       req.body.packaging,
       req.body.other,
       req.body.budget,
+      new Date().toISOString()
     ]
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
@@ -180,21 +196,21 @@ const sendForm = async(req, res) => {
       requestBody: { values: [ values ] },
     })
 
-    // Envio correo al cliente
-    await transporter.sendMail({
-      from: '"Maku" <juanvidaldom@gmail.com>',
-      to: values[3],
-      subject: "Recibimos tu solicitud 🙌",
-      html: buildClientHtml(values),
-    })
+    // // Envio correo al cliente
+    // await transporter.sendMail({
+    //   from: '"Maku" <juanvidaldom@gmail.com>',
+    //   to: values[3],
+    //   subject: "Recibimos tu solicitud 🙌",
+    //   html: buildClientHtml(values),
+    // })
 
-    // Envio correo a encargado de maku
-    await transporter.sendMail({
-      from: '"Maku" <juanvidaldom@gmail.com>',
-      to: "juanvidaldom@gmail.com",
-      subject: "Tienes un nuevo lead del sitio web 🚀",
-      html: buildAdminHtml(values)
-    })
+    // // Envio correo a encargado de maku
+    // await transporter.sendMail({
+    //   from: '"Maku" <juanvidaldom@gmail.com>',
+    //   to: "juanvidaldom@gmail.com",
+    //   subject: "Tienes un nuevo lead del sitio web 🚀",
+    //   html: buildAdminHtml(values)
+    // })
 
     res.sendStatus(200)
   } catch(error) {
