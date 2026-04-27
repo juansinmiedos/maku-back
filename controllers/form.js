@@ -4,11 +4,13 @@ const nodemailer = require("nodemailer")
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    type: "OAuth2",
-    user: process.env.GOOGLE_USER,
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+    // type: "OAuth2",
+    // user: process.env.GOOGLE_USER,
+    // clientId: process.env.GOOGLE_CLIENT_ID,
+    // clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+    user: process.env.GOOGLE_USER_V2,
+    pass: process.env.GOOGLE_PASS
   },
 })
 
@@ -163,6 +165,43 @@ const buildClientHtml = values => `
 </div>
 `
 
+const buildHotLeadHtml = values => `
+<div style="font-family: Arial, sans-serif; background-color:#f4f6f8; padding:20px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px; margin:auto; background:#ffffff; border-radius:10px; overflow:hidden;">
+    
+    <!-- Header -->
+    <tr>
+      <td style="background:#111827; color:#ffffff; padding:20px; text-align:center;">
+        <h2 style="margin:0;">🔥🔥🔥 Tienes un nuevo lead del sitio web PARA CONTACTO INMEDIATO 🔥🔥🔥</h2>
+      </td>
+    </tr>
+
+    <!-- Body -->
+    <tr>
+      <td style="padding:20px;">
+        <p>
+          Contacta a este lead inmediatamente: Está sumamente interesado.
+        </p>
+
+        <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse; margin-top:10px;">
+          
+          ${rowToHtml("Email", `<a href="mailto:${values[0]}">${values[0]}</a>`)}
+
+        </table>
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td style="background:#f9fafb; text-align:center; padding:15px; font-size:12px; color:#6b7280;">
+        Enviado automáticamente desde tu formulario web
+      </td>
+    </tr>
+
+  </table>
+</div>
+`
+
 const sendForm = async(req, res) => {
   try {
     const sheets = google.sheets({ version: "v4", auth })
@@ -196,21 +235,21 @@ const sendForm = async(req, res) => {
       requestBody: { values: [ values ] },
     })
 
-    // // Envio correo al cliente
-    // await transporter.sendMail({
-    //   from: '"Maku" <juanvidaldom@gmail.com>',
-    //   to: values[3],
-    //   subject: "Recibimos tu solicitud 🙌",
-    //   html: buildClientHtml(values),
-    // })
+    // Envio correo al cliente
+    await transporter.sendMail({
+      from: `"Maku" <${process.env.GOOGLE_USER_V2}>`,
+      to: values[3],
+      subject: "Recibimos tu solicitud 🙌",
+      html: buildClientHtml(values),
+    })
 
-    // // Envio correo a encargado de maku
-    // await transporter.sendMail({
-    //   from: '"Maku" <juanvidaldom@gmail.com>',
-    //   to: "juanvidaldom@gmail.com",
-    //   subject: "Tienes un nuevo lead del sitio web 🚀",
-    //   html: buildAdminHtml(values)
-    // })
+    // Envio correo a encargado de maku
+    await transporter.sendMail({
+      from: `"Maku" <${process.env.GOOGLE_USER_V2}>`,
+      to: "makuagency@gmail.com",
+      subject: "Tienes un nuevo lead del sitio web 🚀",
+      html: buildAdminHtml(values)
+    })
 
     res.sendStatus(200)
   } catch(error) {
@@ -220,4 +259,26 @@ const sendForm = async(req, res) => {
   }
 }
 
-module.exports = { sendForm }
+const sendHotContact = async(req, res) => {
+  try {
+    const values = [
+      req.body.email,
+    ]
+
+    // Envio correo a encargado de maku
+    await transporter.sendMail({
+      from: `"Maku" <${process.env.GOOGLE_USER_V2}>`,
+      to: "makuagency@gmail.com",
+      subject: "🔥🔥🔥 Tienes un nuevo lead del sitio web PARA CONTACTO INMEDIATO 🔥🔥🔥",
+      html: buildHotLeadHtml(values)
+    })
+
+    res.sendStatus(200)
+  } catch(error) {
+    console.log("Error at sendHotContact:")
+    console.log(error)
+    res.status(500).json({ error: error.message })
+  }
+}
+
+module.exports = { sendForm, sendHotContact }

@@ -21,7 +21,7 @@ const {
   updateProject,
   deleteProjectById,
 } = require("../controllers/projects")
-const { sendForm } = require("../controllers/form")
+const { sendForm, sendHotContact } = require("../controllers/form")
 
 // PUBLIC ROUTES
 router.post("/signup", signUp)
@@ -29,6 +29,7 @@ router.post("/login", passport.authenticate('local'), logIn)
 router.get("/projects", getProjects)
 router.get("/projects/:name", getProjectByName)
 router.post("/send-form", sendForm)
+router.post("/send-hot-mail", sendHotContact)
 
 // ADMIN ROUTES
 router.get("/me", pingUser)
