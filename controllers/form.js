@@ -94,6 +94,8 @@ const buildAdminHtml = values => `
           ${rowToHtml("Packaging", values[17])}
           ${rowToHtml("Otro", values[18])}
           ${rowToHtml("Presupuesto", `<strong style="color:#16a34a;">${values[19]}</strong>`)}
+          ${rowToHtml("¿Otro presupuesto?", values[20])}
+          ${rowToHtml("¿Algo más?", values[21])}
 
         </table>
       </td>
@@ -226,6 +228,8 @@ const sendForm = async(req, res) => {
       req.body.packaging,
       req.body.other,
       req.body.budget,
+      req.body.differentBudget,
+      req.body.anythingElse,
       new Date().toISOString()
     ]
     await sheets.spreadsheets.values.append({
